@@ -15,8 +15,6 @@
         <string>x86_64</string>
         <key>MUNKI_REPO_SUBDIR</key>
         <string>apps/%NAME%/%MUNKI_ARCHITECTURE%</string>
-        <key>VERSION_CHECK</key>
-        <string>%version%</string>
         <key>extract_icon</key>
         <false/>
         <key>force_munkiimport</key>
