@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Description</key>
+    <string>Downloads the latest yq, builds a package and imports into Munki.
+            Set MUNKI_ARCHITECTURE to "arm64" for Apple Silicon or "x86_64" for Intel.</string>
+    <key>Identifier</key>
+    <string>com.github.jamesdurler.autopkg-recipes.munki.yq</string>
+    <key>Input</key>
+    <dict>
+        <key>NAME</key>
+        <string>yq</string>
+        <key>MUNKI_ARCHITECTURE</key>
+        <string>x86_64</string>
+        <key>MUNKI_REPO_SUBDIR</key>
+        <string>apps/%NAME%/%MUNKI_ARCHITECTURE%</string>
+        <key>VERSION_CHECK</key>
+        <string>%version%</string>
+        <key>extract_icon</key>
+        <false/>
+        <key>force_munkiimport</key>
+        <false/>
+        <key>pkginfo</key>
+        <dict>
+            <key>catalogs</key>
+            <array>
+                <string>testing</string>
+            </array>
+            <key>description</key>
+            <string>yq is a lightweight and portable command-line YAML, JSON and XML processor.</string>
+            <key>display_name</key>
+            <string>yq</string>
+            <key>developer</key>
+            <string>mikefarah</string>
+            <key>name</key>
+            <string>%NAME%</string>
+            <key>icon_name</key>
+            <string>binary.png</string>
+            <key>supported_architectures</key>
+            <array>
+                <string>%MUNKI_ARCHITECTURE%</string>
+            </array>
+            <key>unattended_install</key>
+            <true/>
+            <key>installcheck_script</key>
+            <string>#!/bin/bash
+
+# This will run as a munki install_check script to determine if yq is installed and the correct current version is installed
+# exit status of 0 means install needs to run
+# exit status not 0 means no installation necessary
+
+if [ ! -f /usr/local/bin/yq ]
+then
+    printf "yq is not installed"
+    exit 0
+fi
+
+if [ "$(/usr/local/bin/yq --version | awk '{print $4}' | cut -d 'v' -f2)" != "%version%" ]
+then
+   printf "wrong version of yq is installed"
+   exit 0
+fi
+
+# Otherwise everything is all good
+printf "Correct version of yq is installed"
+exit 1</string>
+            <key>installs</key>
+            <array>
+                <dict>
+                    <key>path</key>
+                    <string>/usr/local/bin/yq</string>
+                    <key>type</key>
+                    <string>file</string>
+                </dict>
+            </array>
+        </dict>
+    </dict>
+    <key>MinimumVersion</key>
+    <string>2.0</string>
+    <key>ParentRecipe</key>
+    <string>com.github.jamesdurler.autopkg-recipes.pkg.yq</string>
+    <key>Process</key>
+    <array>
+        <dict>
+            <key>Arguments</key>
+            <dict>
+                <key>pkg_path</key>
+                <string>%pkg_path%</string>
+                <key>repo_subdirectory</key>
+                <string>%MUNKI_REPO_SUBDIR%</string>
+            </dict>
+            <key>Processor</key>
+            <string>MunkiImporter</string>
+        </dict>
+    </array>
+</dict>
+</plist>
